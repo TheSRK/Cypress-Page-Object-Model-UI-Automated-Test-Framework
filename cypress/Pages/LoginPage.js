@@ -6,20 +6,19 @@ export class LoginPage{
     static btnLogin = '#login-button'
 
     //input username
-    static inputUsername(username){
-        cy.get(this.txtUsername).type(username).should('have.value', username)
-        return this
+    static getUsername(){
+        return cy.get(this.txtUsername)
+        
     }
 
-    static inputPassword(password){
-        cy.get(this.txtPassword).type(password)
-        return this
+    static getPassword(){
+        return cy.get(this.txtPassword)
+        
     }
 
     static doLogin(){
-        cy.get(this.btnLogin).should('be.visible').click()
-        cy.url().should('eq', Cypress.config().baseUrl+'/inventory.html')
-        return this
+        return cy.get(this.btnLogin)
+        
     }
 }
 
