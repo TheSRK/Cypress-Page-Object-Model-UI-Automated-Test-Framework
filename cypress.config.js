@@ -1,11 +1,43 @@
-const { defineConfig } = require("cypress");
+const { defineConfig } = require('cypress');
+const webpackPreprocessor = require('@cypress/webpack-preprocessor');
+const { addCucumberPreprocessorPlugin } = require('@badeball/cypress-cucumber-preprocessor');
 
-module.exports = defineConfig({
-  e2e: {
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
+async function setupNodeEvents(on, config) {
+  await addCucumberPreprocessorPlugin(on, config);
+
+  const options = {
+    webpackOptions: {
+      module: {
+        rules: [
+          {
+            test: /\.feature$/,
+            use: [
+              {
+                loader: '@badeball/cypress-cucumber-preprocessor/webpack',
+                options: config,
+              },
+            ],
+          },
+        ],
+      },
     },
-    baseUrl: "https://www.saucedemo.com",
-    chromeWebSecurity: false
-  },
-});
+
+  };
+
+  on('file:preprocessor', webpackPreprocessor(options));
+
+  return config;
+}
+
+module.exports = {
+  default: defineConfig({
+    e2e: {
+      specPattern: '**/*.feature',
+      supportFile: false,
+      baseUrl:'https://www.saucedemo.com/',
+      chromeWebSecurity: false,
+      setupNodeEvents,
+    },
+  }),
+  setupNodeEvents,
+};
